@@ -5,6 +5,10 @@ from redis.connection import (
     Connection,
     UnixDomainSocketConnection
 )
+from redis.shard import (
+    RedisShard,
+    RedisShardingProxy
+)
 from redis.utils import from_url
 from redis.exceptions import (
     AuthenticationError,
@@ -24,7 +28,7 @@ VERSION = tuple(map(int, __version__.split('.')))
 
 __all__ = [
     'Redis', 'StrictRedis', 'ConnectionPool', 'BlockingConnectionPool',
-    'Connection', 'UnixDomainSocketConnection',
+    'Connection', 'UnixDomainSocketConnection', 'RedisShard', 'RedisShardingProxy'
     'RedisError', 'ConnectionError', 'ResponseError', 'AuthenticationError',
     'InvalidResponse', 'DataError', 'PubSubError', 'WatchError', 'from_url',
     'BusyLoadingError'

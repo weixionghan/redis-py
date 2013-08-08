@@ -2,6 +2,7 @@ from itertools import chain
 import os
 import socket
 import sys
+import random
 
 
 from redis._compat import (b, xrange, imap, byte_to_chr, unicode, bytes, long,
@@ -203,7 +204,7 @@ else:
 class Connection(object):
     "Manages TCP communication to and from a Redis server"
     def __init__(self, host='localhost', port=6379, db=0, password=None,
-                 socket_timeout=None, encoding='utf-8',
+                 socket_timeout=None, encoding='utf-8', alternate_hosts = [],
                  encoding_errors='strict', decode_responses=False,
                  parser_class=DefaultParser):
         self.pid = os.getpid()
@@ -217,6 +218,11 @@ class Connection(object):
         self.decode_responses = decode_responses
         self._sock = None
         self._parser = parser_class()
+
+        if alternate_hosts:
+          self.alternate_hosts = alternate_hosts
+        else:
+          self.alternate_hosts = [{"host":host, "port":port}] # for compat
 
     def __del__(self):
         try:
@@ -239,6 +245,9 @@ class Connection(object):
 
     def _connect(self):
         "Create a TCP socket connection"
+        h = random.choice(self.alternate_hosts)
+        self.host = h["host"]
+        self.port = h["port"]
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(self.socket_timeout)
         sock.connect((self.host, self.port))
